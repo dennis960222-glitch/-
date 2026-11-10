@@ -3,191 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="校園二手物品交換登記平台，讓同學分享閒置物品、減少浪費。">
-  <title>校園好物交換站｜二手物品登記</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <style>
-    :root { --ink:#203047; --muted:#63748b; --brand:#326b8e; --brand-dark:#24536f;
-            --paper:#f4f8fb; --line:#d9e4ec; --white:#fff; --accent:#e9f4f8; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
-           color:var(--ink); background:var(--paper); line-height:1.65; }
-    header { color:white; background:linear-gradient(120deg,#24536f,#4f91a8); padding:42px 20px; }
-    .hero, main, footer { width:min(100% - 32px, 960px); margin-inline:auto; }
-    .hero h1 { margin:0 0 8px; font-size:clamp(1.8rem,5vw,2.6rem); }
-    .hero p { margin:0; color:#eaf5f8; }
-    main { padding-block:28px 48px; }
-    .intro { margin:0 0 22px; color:var(--muted); }
-    .layout { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr); gap:20px; align-items:start; }
-    .panel { background:var(--white); border:1px solid var(--line); border-radius:16px; padding:24px; box-shadow:0 5px 18px #2030470a; }
-    h2 { margin:0 0 16px; font-size:1.35rem; }
-    .field { margin-bottom:15px; }
-    label { display:block; font-weight:650; margin-bottom:6px; }
-    input, select, textarea { width:100%; border:1px solid #b9c9d6; border-radius:9px; padding:11px 12px;
-      font:inherit; color:var(--ink); background:#fff; }
-    input:focus, select:focus, textarea:focus, button:focus-visible { outline:3px solid #9bc9dc; outline-offset:2px; }
-    textarea { min-height:88px; resize:vertical; }
-    .hint { color:var(--muted); font-size:.88rem; margin:5px 0 0; }
-    .required { color:#a33a35; }
-    button { border:0; border-radius:9px; padding:11px 16px; font:inherit; font-weight:700; cursor:pointer; }
-    .primary { background:var(--brand); color:white; width:100%; }
-    .primary:hover { background:var(--brand-dark); }
-    .secondary { color:var(--brand-dark); background:var(--accent); }
-    .entry { border-top:1px solid var(--line); padding:14px 0; }
-    .entry:first-of-type { border-top:0; }
-    .entry h3 { margin:0 0 4px; font-size:1.05rem; }
-    .tag { display:inline-block; padding:2px 9px; border-radius:20px; background:var(--accent); color:var(--brand-dark); font-size:.82rem; }
-    .empty { color:var(--muted); padding:12px 0; }
-    .ai-box { margin-top:18px; background:#f5f9fc; border:1px dashed #9bb7c8; border-radius:12px; padding:16px; }
-    .ai-box p { color:var(--muted); font-size:.9rem; }
-    .status { min-height:1.5em; color:var(--brand-dark); font-size:.9rem; }
-    footer { color:var(--muted); font-size:.85rem; padding:0 0 28px; }
-    @media (max-width:700px) {
-      .layout { grid-template-columns:1fr; }
-      .panel { padding:18px; }
-      header { padding:32px 0; }
-    }
-    @media (max-width:380px) {
-      .hero, main, footer { width:min(100% - 22px, 960px); }
-      .panel { padding:15px; }
-    }
-  </style>
+  <meta name="description" content="每日隨機名言佳句，給自己一點前進的力量。">
+  <title>每日靈感｜隨機名言佳句</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <div class="hero">
-      <h1>♻️ 校園好物交換站</h1>
-      <p>讓用不到的物品找到新主人，一起實踐惜物與分享。</p>
-    </div>
-  </header>
+  <main class="page">
+    <header class="site-header">
+      <div class="logo" aria-hidden="true">✦</div>
+      <p class="eyebrow">A LITTLE DAILY INSPIRATION</p>
+      <h1>每日靈感</h1>
+      <p class="subtitle">給自己一點時間，讀一句話，找回前進的力量。</p>
+    </header>
 
-  <main id="app">
-    <p class="intro">想交換課本、文具或生活用品嗎？填寫下方表單，刊登你的閒置好物！</p>
-    <div class="layout">
-      <section class="panel" aria-labelledby="form-title">
-        <h2 id="form-title">物品刊登表單</h2>
-        <form @submit.prevent="submitForm">
-          <div class="field">
-            <label for="student">稱呼 <span class="required">*</span></label>
-            <input id="student" v-model.trim="form.student" name="student" autocomplete="name" required maxlength="30" placeholder="例如：小安">
-          </div>
-          <div class="field">
-            <label for="item">物品名稱 <span class="required">*</span></label>
-            <input id="item" v-model.trim="form.item" name="item" required maxlength="50" placeholder="例如：微積分課本">
-          </div>
-          <div class="field">
-            <label for="category">物品類別 <span class="required">*</span></label>
-            <select id="category" v-model="form.category" name="category" required>
-              <option disabled value="">請選擇類別</option>
-              <option>書籍課本</option><option>文具用品</option><option>生活用品</option><option>其他</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="condition">物品狀況</label>
-            <select id="condition" v-model="form.condition" name="condition">
-              <option>近全新</option><option>良好</option><option>有使用痕跡</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="contact">聯絡方式 <span class="required">*</span></label>
-            <input id="contact" v-model.trim="form.contact" name="contact" required maxlength="60" placeholder="請填校內信箱或方便聯絡的方式">
-            <p class="hint">請勿填寫身分證字號、住址等敏感個人資料。</p>
-          </div>
-          <div class="field">
-            <label for="description">物品說明</label>
-            <textarea id="description" v-model.trim="form.description" name="description" maxlength="300" placeholder="簡單介紹物品、希望交換的東西等"></textarea>
-          </div>
-          <button class="primary" type="submit">送出刊登</button>
-          <p class="status" role="status" aria-live="polite">{{ message }}</p>
-        </form>
-      </section>
+    <section class="quote-card" aria-live="polite">
+      <div class="quote-mark" aria-hidden="true">“</div>
+      <p id="quote" class="quote-text">正在為你尋找一句靈感……</p>
+      <p id="author" class="quote-author"></p>
+      <div class="card-footer">
+        <span class="tag">今日的一點力量</span>
+        <button id="refresh-btn" class="refresh-button" type="button">
+          <span aria-hidden="true">↻</span> 換一句
+        </button>
+      </div>
+    </section>
 
-      <aside>
-        <section class="panel" aria-labelledby="list-title">
-          <h2 id="list-title">最新交換物品</h2>
-          <p v-if="items.length === 0" class="empty">目前還沒有刊登，成為第一位分享者吧！</p>
-          <article class="entry" v-for="(entry, index) in items" :key="entry.id">
-            <h3>{{ entry.item }}</h3>
-            <span class="tag">{{ entry.category }}</span>
-            <p>{{ entry.condition }} · 分享者：{{ entry.student }}</p>
-            <p v-if="entry.description">{{ entry.description }}</p>
-            <p class="hint">聯絡方式：{{ entry.contact }}</p>
-          </article>
-        </section>
-
-        <section class="ai-box" aria-labelledby="ai-title">
-          <h2 id="ai-title">AI 文案小幫手（選用）</h2>
-          <p>可連接自己電腦上的 Ollama 本地 AI，協助把物品說明改得更清楚。未設定本地 AI 時，也能正常使用表單。</p>
-          <div class="field">
-            <label for="ai-endpoint">本地 AI API 網址</label>
-            <input id="ai-endpoint" v-model.trim="aiEndpoint" placeholder="例如：http://localhost:11434/api/generate">
-          </div>
-          <div class="field">
-            <label for="ai-model">模型名稱</label>
-            <input id="ai-model" v-model.trim="aiModel" placeholder="例如：llama3.2">
-          </div>
-          <button class="secondary" type="button" @click="askLocalAI">幫我潤飾物品說明</button>
-          <p class="status" role="status" aria-live="polite">{{ aiMessage }}</p>
-          <p v-if="aiSuggestion"><strong>AI 建議：</strong>{{ aiSuggestion }}</p>
-        </section>
-      </aside>
-    </div>
+    <p id="status" class="status" role="status">正在連線取得名言……</p>
+    <footer>資料來源：DummyJSON 公開 API · 使用 fetch / async / await</footer>
   </main>
-
-  <footer>
-    <p>課堂示範專題｜資料僅儲存在目前瀏覽器的 localStorage。此頁面為展示原型，刊登內容不會自動傳送到公開網站。</p>
-    <p>AI 協作紀錄：使用 AI 協助規劃表單欄位、撰寫 Vue 互動程式與 RWD 樣式；完成後仍需自行測試與修改。</p>
-  </footer>
-
-  <script>
-    const { createApp } = Vue;
-    createApp({
-      data() {
-        return {
-          form: { student:'', item:'', category:'', condition:'良好', contact:'', description:'' },
-          items: JSON.parse(localStorage.getItem('campusSwapItems') || '[]'),
-          message: '',
-          aiEndpoint: 'http://localhost:11434/api/generate',
-          aiModel: 'llama3.2',
-          aiMessage: '',
-          aiSuggestion: ''
-        };
-      },
-      methods: {
-        submitForm() {
-          const entry = { ...this.form, id: Date.now() };
-          this.items.unshift(entry);
-          localStorage.setItem('campusSwapItems', JSON.stringify(this.items));
-          this.form = { student:'', item:'', category:'', condition:'良好', contact:'', description:'' };
-          this.message = '刊登成功！資料已保存在這台裝置的瀏覽器中。';
-        },
-        async askLocalAI() {
-          if (!this.form.description) {
-            this.aiMessage = '請先在「物品說明」欄位輸入內容。';
-            return;
-          }
-          this.aiMessage = '正在連線本地 AI…';
-          this.aiSuggestion = '';
-          try {
-            const response = await fetch(this.aiEndpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                model: this.aiModel,
-                prompt: '請將以下二手物品介紹改寫得簡潔、友善，不要新增不存在的資訊：' + this.form.description,
-                stream: false
-              })
-            });
-            if (!response.ok) throw new Error('API 回應異常');
-            const result = await response.json();
-            this.aiSuggestion = result.response || 'AI 沒有回傳文字，請確認模型設定。';
-            this.aiMessage = '完成！你可以自行決定是否採用建議。';
-          } catch (error) {
-            this.aiMessage = '目前無法連線。請確認 Ollama 已啟動、模型已下載，且本地 API 允許瀏覽器跨來源存取。';
-          }
-        }
-      }
-    }).mount('#app');
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
